@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15
+    container_name: smartqr-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-smartqr}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    image: thoinguyenhuu/smart-qr-backend:0.1.5
+    container_name: smartqr-backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-smartqr}
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      EMAIL_USERNAME: ${EMAIL_USERNAME:-}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-}
+      APP_JWT_ACCESS_KEY: ${APP_JWT_ACCESS_KEY:-change-me-access-key}
+      APP_JWT_REFRESH_KEY: ${APP_JWT_REFRESH_KEY:-change-me-refresh-key}
+      APP_REGISTER_KEY: ${APP_REGISTER_KEY:-change-me-register-key}
+      APP_FRONTEND_URL: ${APP_FRONTEND_URL:-http://localhost:5173}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY:-}
+      SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL:-}
+      SENDGRID_FROM_NAME: ${SENDGRID_FROM_NAME:-SmartQR Order System}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+
+volumes:
+  postgres_data:

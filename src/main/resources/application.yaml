@@ -1,0 +1,45 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+app:
+  jwt:
+    access_key: ${APP_JWT_ACCESS_KEY}
+    refresh_key: ${APP_JWT_REFRESH_KEY}
+  register:
+    key: ${APP_REGISTER_KEY}
+    ui_host: ${APP_FRONTEND_URL}/verify
+  qr:
+    base_url: ${APP_FRONTEND_URL}
+gemini:
+  api-key: ${GEMINI_API_KEY:${GOOGLE_API_KEY:}}
+  model: gemini-2.5-flash
+sendgrid:
+  api-key: ${SENDGRID_API_KEY}
+  from-name: ${SENDGRID_FROM_NAME}
+  from-email: ${SENDGRID_FROM_EMAIL}
