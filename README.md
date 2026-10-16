@@ -154,3 +154,29 @@ PowerShell:
 .\mvnw.cmd test
 .\mvnw.cmd clean package
 ```
+
+## CI/CD
+
+`.github/workflows/ci-cd.yml` chạy Maven test và package cho push/pull request. Push lên nhánh mặc định hoặc chạy thủ công trên nhánh đó sẽ build cùng image với hai tag `${{ github.sha }}` và `latest`, đẩy Docker Hub và triển khai VPS qua SSH bằng `IMAGE_TAG` là full commit SHA. Test lỗi thì không deploy.
+
+GitHub **Settings → Secrets and variables → Actions** cần các repository secrets:
+
+- `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`: tài khoản có quyền push `thoinguyenhuu/smart-qr-backend`.
+- `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`: thông tin SSH; `VPS_PORT` tùy chọn, mặc định `22`.
+- `VPS_DEPLOY_PATH`: đường dẫn tuyệt đối tới thư mục chứa `docker-compose.yml` và `.env` trên VPS.
+
+VPS cần Linux x86_64, Docker Compose hỗ trợ `--wait`, PostgreSQL đã chạy và file Compose có dòng image `thoinguyenhuu/smart-qr-backend:${IMAGE_TAG:-latest}` như repo. Nếu image private, đăng nhập Docker Hub trên VPS trước. Workflow chỉ cập nhật backend bằng `--no-deps --no-build`, không xóa volume database. Không đồng bộ `.env` từ GitHub; giữ cấu hình production trên VPS. `--wait` kiểm tra container chạy, chưa kiểm tra HTTP.
+
+Đã bỏ test `ApplicationTests.contextLoads` rỗng; CI giữ test hành vi `UserServiceTest`, không cần database hoặc tài khoản mail thật.
+
+Kiểm tra commit đang chạy: `docker inspect --format '{{.Config.Image}}' smartqr-backend`.
+
+Rollback trong thư mục triển khai trên VPS:
+
+```bash
+export IMAGE_TAG=<full-commit-sha-cu>
+docker compose pull backend
+docker compose up -d --no-deps --no-build --wait --wait-timeout 180 backend
+```
+
+`IMAGE_TAG` không được lưu tự động vào `.env`; khi thao tác thủ công cần truyền tag hoặc lưu tag mong muốn vào `.env` để tránh dùng mặc định `latest`. Giữ image SHA cũ trên Docker Hub để rollback. Thời gian rollback phụ thuộc tải image và khởi động; rollback image không hoàn tác thay đổi schema database.

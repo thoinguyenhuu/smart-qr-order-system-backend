@@ -12,7 +12,7 @@ services:
 
   backend:
     build: .
-    image: thoinguyenhuu/smart-qr-backend:0.1.5
+    image: thoinguyenhuu/smart-qr-backend:${IMAGE_TAG:-latest}
     container_name: smartqr-backend
     restart: always
     depends_on:
