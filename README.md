@@ -97,6 +97,18 @@ PowerShell:
 
 Ứng dụng mặc định chạy tại `http://localhost:8080/api`.
 
+### Profile production
+
+JAR và Docker image chứa cả cấu hình mặc định lẫn `application-prod.yaml`. Không bật profile thì backend giữ prefix `/api`; bật `prod` thì backend chạy ở đường dẫn gốc, ví dụ `https://api.xxx/auth/...`.
+
+Trên VPS, thêm biến vào `environment` của service backend trong Docker Compose:
+
+```yaml
+SPRING_PROFILES_ACTIVE: prod
+```
+
+Sau khi pull image mới, chạy `docker compose up -d --force-recreate backend` để áp dụng. Chỉ thêm biến vào `.env` chưa đủ nếu Compose không truyền biến vào container.
+
 ## Chạy bằng Docker Compose
 
 Repo có 2 file compose:
