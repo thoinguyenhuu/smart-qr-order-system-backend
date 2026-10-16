@@ -18,7 +18,6 @@ import java.io.IOException;
 
 @Slf4j
 @Service
-@Primary
 public class SendGridEmailService implements EmailService {
 
     @Value("${sendgrid.api-key}")

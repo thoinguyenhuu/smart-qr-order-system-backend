@@ -11,8 +11,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import org.springframework.context.annotation.Primary;
 
 @Service
+@Primary
 @Slf4j
 @RequiredArgsConstructor
 public class GoogleEmailService implements EmailService {
