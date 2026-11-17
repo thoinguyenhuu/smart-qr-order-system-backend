@@ -171,6 +171,8 @@ PowerShell:
 
 `.github/workflows/ci-cd.yml` chạy Maven test và package cho push/pull request. Push lên nhánh mặc định hoặc chạy thủ công trên nhánh đó sẽ build cùng image với hai tag `${{ github.sha }}` và `latest`, đẩy Docker Hub và triển khai VPS qua SSH bằng `IMAGE_TAG` là full commit SHA. Test lỗi thì không deploy.
 
+Cache: `setup-java` giữ Maven dependencies cho job test; Docker Buildx dùng `cache-from: type=gha` và `cache-to: type=gha,mode=max` để tái sử dụng cả layer build trung gian giữa các lần chạy. Dockerfile tải dependencies theo `pom.xml` trước khi copy source để thay đổi code không làm mất cache layer dependency. Lần đầu hoặc khi cache bị xóa vẫn build bình thường; không cần thêm Secrets. Cách này theo [hướng dẫn cache GitHub Actions của Docker](https://docs.docker.com/build/ci/github-actions/cache/) và [hướng dẫn sắp xếp layer](https://docs.docker.com/build/cache/optimize/).
+
 GitHub **Settings → Secrets and variables → Actions** cần các repository secrets:
 
 - `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`: tài khoản có quyền push `thoinguyenhuu/smart-qr-backend`.

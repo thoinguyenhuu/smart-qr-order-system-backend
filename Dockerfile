@@ -3,8 +3,9 @@ FROM maven:3.9.8-amazoncorretto-17 AS builder
 
 WORKDIR /build
 COPY pom.xml .
+RUN mvn -B --no-transfer-progress dependency:go-offline
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn -B --no-transfer-progress package -DskipTests
 
 # ===== RUN STAGE =====
 FROM amazoncorretto:17
